@@ -1,4 +1,5 @@
-from urllib import response
+import json
+import urllib
 from dotenv import load_dotenv
 
 import requests
@@ -6,7 +7,7 @@ import os
 from pprint import pprint
 
 
-def download_picture(url: str, path: str) -> None:
+def download_and_save_image(url: str, path: str) -> None:
     response = requests.get(url)
     response.raise_for_status()
 
@@ -27,11 +28,12 @@ def fetch_spacex_last_launch(dir_images: str) -> None:
 
     for launch in response:
         if picture_links := launch['links']['flickr']['original']:
-            for idx_link, picture_link in enumerate(picture_links):
-                picture_name: str = f'{company_name}_{idx_link}.jpg'
-                path: str = ''.join([dir_images, picture_name])
+            for idx_link, image_link in enumerate(picture_links):
+                image_format = get_picture_format(url=image_link)
+                image_name: str = f'{company_name}_{idx_link}{image_format}'
+                path: str = ''.join([dir_images, image_name])
                 
-                download_picture(url=picture_link, path=path)
+                download_and_save_image(url=image_link, path=path)
             break
         else:
             flight_number -= 1
@@ -40,35 +42,57 @@ def fetch_spacex_last_launch(dir_images: str) -> None:
 def get_nasa_picture_of_day(api_key: str, dir_images: str) -> None:
     """Get picture of day from NASA-api"""
     
-    url: str = 'https://api.nasa.gov/planetary/apod'
+    url: str = 'https://api.nasa.gov/planetary/apod/'
     payload = {
-        'api_key': api_key
+        "api_key": f"{api_key}",
+        "count": 30
     }
     response = requests.get(url, params=payload)
     response.raise_for_status()
+    response = response.json()
 
-    return response
+    company_name: str = 'nasa_apod'
+
+    for image_number, image_data in enumerate(response):
+        image_link: str = image_data['hdurl']
+        image_format = get_picture_format(url=image_link)
+
+        image_name = f'{company_name}_{image_number}{image_format}'
+
+        image_path: str = ''.join([dir_images, image_name])
+        download_and_save_image(url=image_link, path=image_path)
+
+
+def get_picture_format(url: str) -> str:
+    url_with_decode_spaces = urllib.parse.unquote(url)
+    path_in_url = urllib.parse.urlsplit(url_with_decode_spaces).path
+    return os.path.splitext(path_in_url)[-1]
+    
+
+def check_directory(dir_name):
+    """Checking or create directory"""
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)
 
 
 if __name__ == '__main__':
-    NASA_API_KEY = os.getenv('NASA_API_KEY')
-
-    picture_name = 'hubble.jpeg'
-    directory_images = 'images/'
-
-    path_images: str = ''.join([directory_images, picture_name])
-    url: str = 'https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg'
-
+    
     """Load environment variables"""
     dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
     if os.path.exists(dotenv_path):
         load_dotenv(dotenv_path)
 
-    if not os.path.exists(directory_images):
-        os.makedirs(directory_images)
+    NASA_API_KEY = os.getenv('NASA_API_KEY')
+    print(NASA_API_KEY)
+
+    dir_images = 'images/'
+
+    url: str = 'https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg'
+
+    check_directory(dir_name=dir_images)
     
     try:
-        fetch_spacex_last_launch(directory_images=directory_images)
-        get_nasa_picture_of_day(api_key=NASA_API_KEY)
+        fetch_spacex_last_launch(dir_images=dir_images)
+        get_nasa_picture_of_day(api_key=NASA_API_KEY, dir_images=dir_images)
     except requests.exceptions.HTTPError:
         print('Ошибка в в получении картинки')
