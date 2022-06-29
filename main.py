@@ -1,42 +1,11 @@
-import urllib.parse
-from dotenv import load_dotenv
-
 import requests
 import os
-from pprint import pprint
 from datetime import datetime
 
-
-def download_and_save_image(url: str, path: str, params=None) -> None:
-    response = requests.get(url, params=params)
-    response.raise_for_status()
-
-    with open(path, "wb") as write_file:
-        write_file.write(response.content)
-
-
-def fetch_spacex_last_launch(dir_images: str) -> None:
-    """Get last images links from Spacex flight"""
-
-    api_spacex_data = "https://api.spacexdata.com/v5/launches/past"
-    response: requests.Response = requests.get(api_spacex_data)
-    response.raise_for_status()
-    response = response.json()
-
-    flight_number = response[-1]["flight_number"]
-    company_name: str = "spacex"
-
-    for launch in response:
-        if image_links := launch["links"]["flickr"]["original"]:
-            for idx_link, image_link in enumerate(image_links):
-                image_format = get_image_format(url=image_link)
-                image_name: str = f"{company_name}_{idx_link}{image_format}"
-                path: str = "".join([dir_images, image_name])
-
-                download_and_save_image(url=image_link, path=path)
-            break
-        else:
-            flight_number -= 1
+from fetch_spacex_images import fetch_spacex_last_launch
+from environment_variables import load_environment_variables
+from word_processing import get_image_format
+from download_and_save_image import download_and_save_image
 
 
 def get_nasa_image_of_day(api_key: str, dir_images: str) -> None:
@@ -87,12 +56,6 @@ def get_nasa_earth_image(api_key: str, dir_images: str, count_image: int) -> Non
         download_and_save_image(url=url_image_template, path=image_path, params=payload)
 
 
-def get_image_format(url: str) -> str:
-    url_with_decode_spaces = urllib.parse.unquote(url)
-    path_in_url = urllib.parse.urlsplit(url_with_decode_spaces).path
-    return os.path.splitext(path_in_url)[-1]
-
-
 def check_directory(dir_name: str) -> None:
     """Checking or create directory"""
     if not os.path.exists(dir_name):
@@ -101,17 +64,11 @@ def check_directory(dir_name: str) -> None:
 
 if __name__ == "__main__":
 
-    """Load environment variables"""
-    dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
-    if os.path.exists(dotenv_path):
-        load_dotenv(dotenv_path)
-
+    load_environment_variables()
     NASA_API_KEY = os.getenv("NASA_API_KEY")
 
     dir_images = "images/"
     count_nasa_earth_image = 10
-
-    url: str = "https://upload.wikimedia.org/wikipedia/commons/3/3f/HST-SM4.jpeg"
 
     check_directory(dir_name=dir_images)
 

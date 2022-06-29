@@ -2,7 +2,7 @@
 Downloading last images and save to directory `images`
 ***
 
-# Environment requirements
+## Environment requirements
 Python3.10+
 ***
 
@@ -10,6 +10,13 @@ Python3.10+
 ```bash
 $ pip install -r requirements.txt
 ```
+***
+
+## Environment variables
+Sign up on https://api.nasa.gov/ and get `API-key`.
+
+Create `.env` file and paste NASA_API_KEY=<`API_KEY`>.
+***
 
 ## How to use
 ```bash
