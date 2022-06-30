@@ -1,16 +1,21 @@
 import requests
+from pprint import pprint
+import argparse
 
 from download_and_save_image import download_and_save_image
 from word_processing import get_image_format
+import config
+from check_directory import check_directory
 
 
-def fetch_spacex_last_launch(dir_images: str) -> None:
+def fetch_spacex_last_launch(dir_images: str, launch_id=None) -> None:
     """Get last images links from Spacex flight"""
 
-    api_spacex_data = "https://api.spacexdata.com/v5/launches/past"
+    api_spacex_data = "https://api.spacexdata.com/v5/launches"
     response: requests.Response = requests.get(api_spacex_data)
     response.raise_for_status()
     response = response.json()
+    pprint(response)
 
     flight_number = response[-1]["flight_number"]
     company_name: str = "spacex"
@@ -26,7 +31,28 @@ def fetch_spacex_last_launch(dir_images: str) -> None:
             break
         else:
             flight_number -= 1
+            
+            
+def console_argument_parser():
+    parser = argparse.ArgumentParser(
+            description=(
+                """
+                Программа принимает на вход ссылки и генерирует коротки (Битлинк) ссылки.
+                Так же считает количество переходов по коротким ссылкам.
+                """)
+            )
+    parser.add_argument(
+        '--id',
+        help='Введите id запуска',
+        )
+    
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
-    print()
+    check_directory(dir_name=config.dir_images)
+    
+    args = console_argument_parser()
+    launch_id: int = args.id
+
+    fetch_spacex_last_launch(dir_images=config.dir_images, launch_id=launch_id)
