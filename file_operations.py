@@ -1,11 +1,13 @@
+from distutils.command.config import config
 import os
 import requests
 
+import config
 
-def check_directory(dir_name: str) -> None:
+def check_directory() -> None:
     """Checking or create directory"""
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
+    if not os.path.exists(config.dir_images):
+        os.makedirs(config.dir_images)
         
         
 def save_image(response: requests.Response, path: str) -> None:
