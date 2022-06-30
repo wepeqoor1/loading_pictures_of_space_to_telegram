@@ -1,16 +1,17 @@
 import requests
-import pprint
+from pprint import pprint
 import argparse
 
 from download_and_save_image import download_and_save_image
 from word_processing import get_image_format
-from config import dir_images
+import config
+from check_directory import check_directory
 
 
-def fetch_spacex_last_launch(dir_images: str, lunch_id=None) -> None:
+def fetch_spacex_last_launch(dir_images: str, launch_id=None) -> None:
     """Get last images links from Spacex flight"""
 
-    api_spacex_data = "https://api.spacexdata.com/v5/launches/past"
+    api_spacex_data = "https://api.spacexdata.com/v5/launches"
     response: requests.Response = requests.get(api_spacex_data)
     response.raise_for_status()
     response = response.json()
@@ -41,16 +42,17 @@ def console_argument_parser():
                 """)
             )
     parser.add_argument(
-        '--launch_id',
+        '--id',
         help='Введите id запуска',
-        type=int,
-        
         )
+    
     return parser.parse_args()
 
 
 if __name__ == '__main__':
+    check_directory(dir_name=config.dir_images)
+    
     args = console_argument_parser()
-    lunch_id: str = args.launch_id
+    launch_id: int = args.id
 
-    fetch_spacex_last_launch(dir_images=dir_images, lunch_id=lunch_id)
+    fetch_spacex_last_launch(dir_images=config.dir_images, launch_id=launch_id)
