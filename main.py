@@ -56,12 +56,6 @@ def get_nasa_earth_image(api_key: str, dir_images: str, count_image: int) -> Non
         download_and_save_image(url=url_image_template, path=image_path, params=payload)
 
 
-def check_directory(dir_name: str) -> None:
-    """Checking or create directory"""
-    if not os.path.exists(dir_name):
-        os.makedirs(dir_name)
-
-
 if __name__ == "__main__":
 
     load_environment_variables()
