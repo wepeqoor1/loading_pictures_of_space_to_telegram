@@ -9,11 +9,13 @@ from file_operations import check_directory, save_image
 import config
 
 
-def get_ship_launches(payload: str) -> dict:
+def get_ship_launches(api_key: str) -> dict:
     """Get Earth image from NASA-API"""
 
     url = "https://api.nasa.gov/EPIC/api/natural/images"
-
+    payload = {
+        'api_key': api_key
+    }
     response = requests.get(url, params=payload)
     response.raise_for_status()
 
@@ -45,10 +47,8 @@ if __name__ == "__main__":
     args = parsing_console_argument()
     image_count: int = args.count
 
-    payload = {"api_key": os.getenv("NASA_API_KEY")}
-
     try:
-        ship_launches = get_ship_launches(payload=payload)
+        ship_launches = get_ship_launches(api_key=os.getenv("NASA_API_KEY"))
 
         for image_number, ship_launch in enumerate(ship_launches):
 
