@@ -22,7 +22,7 @@ def get_ship_launches(api_key: str) -> dict:
     return response.json()
 
 
-def parsing_console_argument():
+def parsing_console_arguments():
     parser = argparse.ArgumentParser(
         description=(
             """
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     load_dotenv()
     check_directory()
 
-    args = parsing_console_argument()
+    args = parsing_console_arguments()
     image_count: int = args.count
 
     try:
