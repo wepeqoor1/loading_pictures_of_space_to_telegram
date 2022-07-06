@@ -21,7 +21,7 @@ def get_apod_image_of_day(api_key: str, image_count: int) -> None:
     return response.json()
 
 
-def parsing_console_argument():
+def parsing_console_arguments():
     parser = argparse.ArgumentParser(
         description=(
             """
