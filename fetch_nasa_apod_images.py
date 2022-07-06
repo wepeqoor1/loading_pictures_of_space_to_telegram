@@ -9,11 +9,11 @@ from file_operations import check_directory, save_image
 import config
 
 
-def get_apod_image_of_day(api_key: str, count_image: int) -> None:
+def get_apod_image_of_day(api_key: str, image_count: int) -> None:
     """Get image of day from NASA-API"""
 
     url = "https://api.nasa.gov/planetary/apod/"
-    payload = {"api_key": api_key, "count": count_image}
+    payload = {"api_key": api_key, "count": image_count}
 
     response = requests.get(url, params=payload)
     response.raise_for_status()
@@ -50,11 +50,11 @@ if __name__ == "__main__":
     check_directory()
 
     args = parsing_console_argument()
-    count_image: int = args.count
+    image_count: int = args.count
 
     try:
         ship_launches = get_apod_image_of_day(
-            api_key=os.getenv("NASA_API_KEY"), count_image=count_image
+            api_key=os.getenv("NASA_API_KEY"), image_count=image_count
         )
 
         for image_number, ship_launch in enumerate(ship_launches):
