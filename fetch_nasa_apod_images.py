@@ -5,7 +5,7 @@ import urllib.parse
 
 from dotenv import load_dotenv
 
-from file_operations import check_directory, save_image
+from file_operations import save_image
 import config
 
 
@@ -68,7 +68,8 @@ if __name__ == "__main__":
             )
             image.raise_for_status()
 
-            save_image(response=image, path=image_path)
-
+            with open(image_path, "wb") as write_file:
+                write_file.write(image.content)
+                
     except requests.exceptions.HTTPError as http_error:
         print("Не удалось загрузить картинку")

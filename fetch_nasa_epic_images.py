@@ -63,14 +63,13 @@ if __name__ == "__main__":
             image_link = f"https://api.nasa.gov/EPIC/archive/natural/{date_convert}/png/{image}.png"
 
             image_name = f"nasa_epic_{image_number}.png"
-            image_path = f"{config.dir_images}{image_name}"
-
             image: requests.Response = requests.get(
                 url=image_link, params={"api_key": os.getenv("NASA_API_KEY")}
             )
             image.raise_for_status()
 
-            save_image(response=image, path=image_path)
+            with open(f'{config.dir_images}{image_name}', "wb") as write_file:
+                write_file.write(image.content)
 
     except requests.exceptions.HTTPError as http_error:
         print("Не удалось загрузить картинку")
