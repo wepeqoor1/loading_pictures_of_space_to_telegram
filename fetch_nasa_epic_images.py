@@ -5,17 +5,12 @@ import os
 import requests
 from datetime import datetime
 
-from file_operations import check_directory, save_image
-import config
-
 
 def get_ship_launches(api_key: str) -> dict:
     """Get Earth image from NASA-API"""
 
     url = "https://api.nasa.gov/EPIC/api/natural/images"
-    payload = {
-        'api_key': api_key
-    }
+    payload = {"api_key": api_key}
     response = requests.get(url, params=payload)
     response.raise_for_status()
 
@@ -42,7 +37,8 @@ def parsing_console_arguments():
 
 if __name__ == "__main__":
     load_dotenv()
-    os.makedirs(config.dir_images, exist_ok=True)
+    dir_images = "images/"
+    os.makedirs(dir_images, exist_ok=True)
 
     args = parsing_console_arguments()
     image_count: int = args.count
@@ -68,7 +64,7 @@ if __name__ == "__main__":
             )
             image.raise_for_status()
 
-            with open(f'{config.dir_images}{image_name}', "wb") as write_file:
+            with open(f"{dir_images}{image_name}", "wb") as write_file:
                 write_file.write(image.content)
 
     except requests.exceptions.HTTPError as http_error:

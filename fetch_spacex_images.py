@@ -3,8 +3,7 @@ import requests
 import argparse
 import urllib.parse
 
-import config
-from file_operations import check_directory, save_image
+
 from custom_exceptions import ValueNotFoundException
 
 
@@ -14,7 +13,7 @@ def fetch_data_by_flight_number(flight_number: int) -> dict:
     url = f"https://api.spacexdata.com/v3/launches/{flight_number}"
     response: requests.Response = requests.get(url)
     response.raise_for_status()
-    
+
     return response.json()
 
 
@@ -24,14 +23,14 @@ def fetch_data_by_last_launch() -> dict:
     url = "https://api.spacexdata.com/v5/launches/past"
     response: requests.Response = requests.get(url)
     response.raise_for_status()
-    
+
     return response.json()
 
 
 def get_image_format(url: str) -> str:
     url_with_decode_spaces = urllib.parse.unquote(url)
     path_in_url = urllib.parse.urlsplit(url_with_decode_spaces).path
-    
+
     return os.path.splitext(path_in_url)[-1]
 
 
@@ -53,7 +52,8 @@ def parsing_console_arguments():
 
 
 if __name__ == "__main__":
-    os.makedirs(config.dir_images, exist_ok=True)
+    dir_images = "images/"
+    os.makedirs(dir_images, exist_ok=True)
 
     args = parsing_console_arguments()
     flight_number: int = args.id
@@ -68,24 +68,24 @@ if __name__ == "__main__":
         else:
             flights: dict = fetch_data_by_last_launch()
             flight_number = flights[-1]["flight_number"]
-            
+
             for flight in flights:
-                if not flight ["links"]["flickr"]["original"]:
+                if not flight["links"]["flickr"]["original"]:
                     flight_number -= 1
                     continue
                 if image_links := flight["links"]["flickr"]["original"]:
                     break
-                
+
         for idx, image_link in enumerate(image_links):
             image_format = get_image_format(url=image_link)
             image_name: str = f"spacex_{idx}{image_format}"
             image = requests.get(image_link)
             image.raise_for_status()
-            
-            with open(f'{config.dir_images}{image_name}{image_format}', "wb") as write_file:
+
+            with open(f"{dir_images}{image_name}", "wb") as write_file:
                 write_file.write(image.content)
-                
+
     except requests.exceptions.HTTPError as http_error:
         print("Данные не найдены")
     except ValueNotFoundException as not_found_error:
-        print(f'Изображения с номером полета {flight_number} не найдены')
+        print(f"Изображения с номером полета {flight_number} не найдены")
