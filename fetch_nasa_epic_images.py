@@ -42,7 +42,7 @@ def parsing_console_arguments():
 
 if __name__ == "__main__":
     load_dotenv()
-    check_directory()
+    os.makedirs(config.dir_images, exist_ok=True)
 
     args = parsing_console_arguments()
     image_count: int = args.count
