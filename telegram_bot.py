@@ -21,7 +21,8 @@ class TelegramBot:
         self.bot.send_message(text=message, chat_id=self.chat_id)
 
     def upload_image(self, image_path: str):
-        self.bot.send_document(chat_id=self.chat_id, document=open(image_path, "rb"))
+        with open(image_path, 'rb') as image:    
+            self.bot.send_document(chat_id=self.chat_id, document=image)
 
 
 def generate_mixed_images() -> list:
