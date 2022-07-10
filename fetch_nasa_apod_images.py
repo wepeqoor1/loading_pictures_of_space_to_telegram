@@ -49,7 +49,7 @@ if __name__ == "__main__":
     load_dotenv()
     check_directory()
 
-    args = parsing_console_argument()
+    args = parsing_console_arguments()
     image_count: int = args.count
 
     try:
