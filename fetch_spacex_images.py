@@ -5,6 +5,7 @@ import urllib.parse
 
 import config
 from file_operations import check_directory, save_image
+from custom_exceptions import NotFoundValueException
 
 
 def fetch_data_by_flight_number(flight_number: int) -> dict:
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         if flight_number:
             flight: dict = fetch_data_by_flight_number(flight_number=flight_number)
             if not flight["links"]["flickr_images"] or flight.get("error"):
-                raise requests.exceptions.HTTPError
+                raise NotFoundValueException
             else:
                 image_links = flight["links"]["flickr_images"]
         else:
@@ -82,5 +83,7 @@ if __name__ == "__main__":
             image.raise_for_status()
             save_image(response=image, path=f'{config.dir_images}{image_name}{image_format}')
             
-    except requests.exceptions.HTTPError as er:
+    except requests.exceptions.HTTPError as http_error:
         print("Данные не найдены")
+    except NotFoundValueException as not_found_error:
+        print(f'Изображения с номером полета {flight_number} не найдены')
