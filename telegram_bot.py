@@ -33,7 +33,7 @@ def generate_mixed_images() -> list:
 if __name__ == "__main__":
     load_dotenv()
 
-    chat_id = -1001645491537
+    chat_id = os.getenv('TELEGRAM_CHAT_ID')
     message= "Мой прекрасный космос"
     seconds_in_hour = 3600
     publish_seconds_timeout: int = (
