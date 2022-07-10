@@ -14,8 +14,7 @@ class TelegramBot:
         self.chat_id = chat_id
 
     def get_updates(self):
-        updates = self.bot.get_updates()[-1]
-        print(updates)
+        return self.bot.get_updates()[-1]
 
     def send_message(self, message):
         self.bot.send_message(text=message, chat_id=self.chat_id)
