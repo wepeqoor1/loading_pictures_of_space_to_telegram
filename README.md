@@ -24,8 +24,20 @@ Get Telegram API Token:
 > Step 4. Choose a username for your bot. It must end in `bot`. Like this, for example: TetrisBot or tetris_bot.  
 > Step 5. Copy `TELEGRAM_API_TOKEN` and paste to `.env` file.
 
-TELEGRAM_API_TOKEN=<`TELEGRAM_API_TOKEN`>
+TELEGRAM_API_TOKEN=<`TELEGRAM_API_TOKEN`>  
+
+Search telegram bot `Get My ID` https://t.me/getmyid_bot  
+Start bot `/start`
+Forward any message from your telegram channel to Bot.  
+Bot answer ID channel like this.
+```
+Your user ID: 111111111
+Current chat ID: 11111111
+Forwarded from chat: -11111111111
+```
 ***
+Paste `Forwarded from chat` in .env file:
+TELEGRAM_CHAT_ID=<`Forwarded from chat`>
 
 # How to use
 ## For the beginning, download images from SpaceX and NASA API.
@@ -47,7 +59,7 @@ $ python3 fetch_nasa_epic_images.py <Count of launches>
 If parameter is exists:
 >Loads SpaceX images of launch in directory `images`.
 ```bash
-$ python3 fetch_spacex_images.py <launch id>
+$ python3 fetch_spacex_images.py --id <launch id>
 ```
 
 If parameter is `not` exists:
@@ -59,7 +71,7 @@ $ python3 fetch_spacex_images.py
 
 ## Telegram Bot
 ### After uploading images of space and launches, start **telegram_bot.py**. 
-Script publish in telegram channel message and upload image of space from directory (default `images/` from `config.py`) every (default 4 hours from `config.py`) 
+Script publish in telegram channel message and upload image of space from directory `images/` every 4 hours.
 ```bash
 $ python3 telegram_bot.py
 ```
