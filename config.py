@@ -1,1 +1,0 @@
-dir_images = "images/"
