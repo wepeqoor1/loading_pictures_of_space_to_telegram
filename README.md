@@ -35,9 +35,9 @@ Your user ID: 111111111
 Current chat ID: 11111111
 Forwarded from chat: -11111111111
 ```
-***
-Paste `Forwarded from chat` in .env file:
+Paste `Forwarded from chat` in .env file:  
 TELEGRAM_CHAT_ID=<`Forwarded from chat`>
+***
 
 # How to use
 ## For the beginning, download images from SpaceX and NASA API.
