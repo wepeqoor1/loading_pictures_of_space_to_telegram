@@ -1,3 +1,4 @@
+from pathlib import Path
 from dotenv import load_dotenv
 
 import argparse
@@ -37,8 +38,10 @@ def parsing_console_arguments():
 
 if __name__ == "__main__":
     load_dotenv()
-    dir_images = "images/"
-    os.makedirs(dir_images, exist_ok=True)
+    
+    dir_images = 'images'
+    path_images = Path(Path.cwd(), dir_images)
+    path_images.mkdir(exist_ok=True)
 
     args = parsing_console_arguments()
     image_count: int = args.count
@@ -64,7 +67,7 @@ if __name__ == "__main__":
             )
             image.raise_for_status()
 
-            with open(f"{dir_images}{image_name}", "wb") as write_file:
+            with open(Path(path_images, image_name), "wb") as write_file:
                 write_file.write(image.content)
 
     except requests.exceptions.HTTPError as http_error:
