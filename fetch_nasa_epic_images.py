@@ -48,27 +48,32 @@ if __name__ == "__main__":
 
     try:
         ship_launches = get_ship_launches(api_key=os.getenv("NASA_API_KEY"))
+    except requests.exceptions.HTTPError as http_error:
+        print("Не удалось загрузить Данные о полете")
+        
+    for image_number, ship_launch in enumerate(ship_launches):
 
-        for image_number, ship_launch in enumerate(ship_launches):
+        if image_number >= image_count:
+            break
 
-            if image_number >= image_count:
-                break
+        image, image_date = ship_launch["image"], ship_launch["date"]
+        date_convert = datetime.strftime(
+            datetime.fromisoformat(image_date), format="%Y/%m/%d"
+        )
 
-            image, image_date = ship_launch["image"], ship_launch["date"]
-            date_convert = datetime.strftime(
-                datetime.fromisoformat(image_date), format="%Y/%m/%d"
-            )
+        image_link = f"https://api.nasa.gov/EPIC/archive/natural/{date_convert}/png/{image}.png"
 
-            image_link = f"https://api.nasa.gov/EPIC/archive/natural/{date_convert}/png/{image}.png"
-
-            image_name = f"nasa_epic_{image_number}.png"
+        image_name = f"nasa_epic_{image_number}.png"
+        
+        try:
             image: requests.Response = requests.get(
                 url=image_link, params={"api_key": os.getenv("NASA_API_KEY")}
             )
             image.raise_for_status()
+        except requests.exceptions.HTTPError as http_error:
+            print("Не удалось загрузить картинку")
 
-            with open(Path(path_images, image_name), "wb") as write_file:
-                write_file.write(image.content)
+        with open(Path(path_images, image_name), "wb") as write_file:
+            write_file.write(image.content)
 
-    except requests.exceptions.HTTPError as http_error:
-        print("Не удалось загрузить картинку")
+
