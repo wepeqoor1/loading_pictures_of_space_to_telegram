@@ -59,11 +59,11 @@ if __name__ == "__main__":
             break
 
         image, image_date = ship_launch["image"], ship_launch["date"]
-        date_convert = datetime.strftime(
+        convert_date = datetime.strftime(
             datetime.fromisoformat(image_date), format="%Y/%m/%d"
         )
 
-        image_link = f"https://api.nasa.gov/EPIC/archive/natural/{date_convert}/png/{image}.png"
+        image_link = f"https://api.nasa.gov/EPIC/archive/natural/{convert_date}/png/{image}.png"
 
         image_name = f"nasa_epic_{image_number}.png"
         
