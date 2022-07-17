@@ -1,13 +1,15 @@
 import argparse
 import os
 from pathlib import Path
+from typing import Optional
+from xml.dom import NotFoundErr
 import requests
 import urllib.parse
 
 from dotenv import load_dotenv
 
 
-def get_apod_image_of_day(api_key: str, image_count: int) -> None:
+def get_apod_image_of_day(api_key: str, image_count: int) -> dict:
     """Get image of day from NASA-API"""
 
     url = "https://api.nasa.gov/planetary/apod/"
@@ -23,7 +25,7 @@ def parsing_console_arguments():
     parser = argparse.ArgumentParser(
         description=(
             """
-                Программа принимает обязательный параметр --count: 
+                Программа принимает обязательный параметр --count:
                 количество случайных картинок космоса.
                 """
         )
@@ -45,8 +47,10 @@ def get_image_extention(url: str) -> str:
 
 if __name__ == "__main__":
     load_dotenv()
-    nasa_api_key = os.getenv("NASA_API_KEY")
-    
+    nasa_api_key: Optional[str] = os.getenv("NASA_API_KEY")
+    if not nasa_api_key:
+        raise NotFoundErr('Неправильный api ключ')
+
     dir_images = 'images'
     path_images = Path(Path.cwd() / dir_images)
     path_images.mkdir(exist_ok=True)
