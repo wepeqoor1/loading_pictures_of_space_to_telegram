@@ -45,6 +45,7 @@ def get_image_extention(url: str) -> str:
 
 if __name__ == "__main__":
     load_dotenv()
+    nasa_api_key = os.getenv("NASA_API_KEY")
     
     dir_images = 'images'
     path_images = Path(Path.cwd() / dir_images)
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
     try:
         ship_launches = get_apod_image_of_day(
-            api_key=os.getenv("NASA_API_KEY"), image_count=image_count
+            api_key=nasa_api_key, image_count=image_count
         )
 
         for image_number, ship_launch in enumerate(ship_launches):
@@ -64,7 +65,7 @@ if __name__ == "__main__":
             image_name = f"nasa_apod_{image_number}{image_extention}"
 
             image: requests.Response = requests.get(
-                url=image_link, params={"api_key": os.getenv("NASA_API_KEY")}
+                url=image_link, params={"api_key": nasa_api_key}
             )
             image.raise_for_status()
 

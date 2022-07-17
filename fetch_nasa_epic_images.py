@@ -38,6 +38,8 @@ def parsing_console_arguments():
 
 if __name__ == "__main__":
     load_dotenv()
+    nasa_api_key = os.getenv("NASA_API_KEY")
+
     
     dir_images = 'images'
     path_images = Path(Path.cwd(), dir_images)
@@ -47,7 +49,7 @@ if __name__ == "__main__":
     image_count: int = args.count
 
     try:
-        ship_launches = get_ship_launches(api_key=os.getenv("NASA_API_KEY"))
+        ship_launches = get_ship_launches(api_key=nasa_api_key)
     except requests.exceptions.HTTPError as http_error:
         print("Не удалось загрузить Данные о полете")
         
@@ -67,7 +69,7 @@ if __name__ == "__main__":
         
         try:
             image: requests.Response = requests.get(
-                url=image_link, params={"api_key": os.getenv("NASA_API_KEY")}
+                url=image_link, params={"api_key": nasa_api_key}
             )
             image.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
