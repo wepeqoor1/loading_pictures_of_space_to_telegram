@@ -39,9 +39,8 @@ if __name__ == "__main__":
             image_name: str = images.pop()
             
         try:
-            bot.send_message(text=message, chat_id=chat_id)
             with open(Path(path_images, image_name), "rb") as image:
-                bot.send_document(chat_id=chat_id, document=image)
+                bot.send_document(chat_id=chat_id, document=image, caption=message)
             sleep(publish_seconds_timeout)
         except NetworkError:
             sleep(timeout)
