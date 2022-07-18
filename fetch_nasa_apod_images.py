@@ -7,6 +7,7 @@ import requests
 import urllib.parse
 
 from dotenv import load_dotenv
+from utils import download_image
 
 
 def get_apod_image_of_day(api_key: str, image_count: int) -> dict:
@@ -67,14 +68,8 @@ if __name__ == "__main__":
             image_link: str = ship_launch["hdurl"]
             image_extention: str = get_image_extention(url=image_link)
             image_name = f"nasa_apod_{image_number}{image_extention}"
-
-            image: requests.Response = requests.get(
-                url=image_link, params={"api_key": nasa_api_key}
-            )
-            image.raise_for_status()
-
-            with open(Path(path_images, image_name), "wb") as write_file:
-                write_file.write(image.content)
+            image_path = Path(path_images, image_name)
+            download_image(url=image_link, path=image_path, params={"api_key": nasa_api_key})
 
     except requests.exceptions.HTTPError as http_error:
         print("Не удалось загрузить картинку")

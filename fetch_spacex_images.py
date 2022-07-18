@@ -6,7 +6,7 @@ import urllib.parse
 
 
 from custom_exceptions import ValueNotFoundException
-
+from utils import download_image
 
 def fetch_data_by_flight_number(flight_number: int) -> dict:
     """Downloading images from flight number SpaceX launch"""
@@ -81,11 +81,9 @@ if __name__ == "__main__":
         for idx, image_link in enumerate(image_links):
             image_format = get_image_format(url=image_link)
             image_name: str = f"spacex_{idx}{image_format}"
-            image = requests.get(image_link)
-            image.raise_for_status()
-                  
-            with open(Path(path_images, image_name), "wb") as write_file:
-                write_file.write(image.content)
+            image_path = Path(path_images, image_name)
+            download_image(url=image_link, path=image_path)
+
 
     except requests.exceptions.HTTPError as http_error:
         print("Данные не найдены")

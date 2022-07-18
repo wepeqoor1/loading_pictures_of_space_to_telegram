@@ -6,6 +6,8 @@ import os
 import requests
 from datetime import datetime
 
+from utils import download_image
+
 
 def get_ship_launches(api_key: str) -> dict:
     """Get Earth image from NASA-API"""
@@ -66,16 +68,9 @@ if __name__ == "__main__":
         image_link = f"https://api.nasa.gov/EPIC/archive/natural/{convert_date}/png/{image}.png"
 
         image_name = f"nasa_epic_{image_number}.png"
+        image_path = Path(path_images, image_name)
         
         try:
-            image: requests.Response = requests.get(
-                url=image_link, params={"api_key": nasa_api_key}
-            )
-            image.raise_for_status()
+            download_image(url=image_link, path=image_path, params={"api_key": nasa_api_key})
         except requests.exceptions.HTTPError as http_error:
             print("Не удалось загрузить картинку")
-
-        with open(Path(path_images, image_name), "wb") as write_file:
-            write_file.write(image.content)
-
-
