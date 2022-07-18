@@ -27,8 +27,9 @@ if __name__ == "__main__":
     chat_id = os.getenv("TELEGRAM_CHAT_ID")
     message = "Мой прекрасный космос"
     publish_seconds_timeout: int = hours_timeout_publish * SECONDS_IN_HOUR
-
-    bot: telegram.Bot = telegram.Bot(token=os.getenv("TELEGRAM_API_TOKEN"))
+    
+    telegram_api_token = os.getenv("TELEGRAM_API_TOKEN")
+    bot: telegram.Bot = telegram.Bot(token=telegram_api_token)
 
     images = []
     timeout = 1
