@@ -4,28 +4,17 @@ import requests
 import argparse
 import urllib.parse
 
-
-from custom_exceptions import ValueNotFoundException
 from utils import download_image
 
-def fetch_data_by_flight_number(flight_number: int) -> dict:
+
+def fetch_images_by_launch_id(launch_id: int) -> list:
     """Downloading images from flight number SpaceX launch"""
 
-    url = f"https://api.spacexdata.com/v3/launches/{flight_number}"
+    url = f"https://api.spacexdata.com/v5/launches/{launch_id}"
     response: requests.Response = requests.get(url)
+    
     response.raise_for_status()
-
-    return response.json()
-
-
-def fetch_data_by_last_launch() -> dict:
-    """Downloading images from last SpaceX launch"""
-
-    url = "https://api.spacexdata.com/v5/launches/past"
-    response: requests.Response = requests.get(url)
-    response.raise_for_status()
-
-    return response.json()
+    return response.json()["links"]["flickr"]["original"]
 
 
 def get_image_format(url: str) -> str:
@@ -58,34 +47,26 @@ if __name__ == "__main__":
     path_images.mkdir(exist_ok=True)
 
     args = parsing_console_arguments()
-    flight_number: int = args.id
-
+    input_launch_id = args.id
+    
+    launch_ids = [
+        input_launch_id,
+        'latest',  # last launch
+        '5eb87d42ffd86e000604b384',  # Last launch with images
+    ]
+    
     try:
-        if flight_number:
-            flight: dict = fetch_data_by_flight_number(flight_number=flight_number)
-            if not flight["links"]["flickr_images"] or flight.get("error"):
-                raise ValueNotFoundException
-            else:
-                image_links = flight["links"]["flickr_images"]
-        else:
-            flights: dict = fetch_data_by_last_launch()
-            flight_number = flights[-1]["flight_number"]
-
-            for flight in flights:
-                if not flight["links"]["flickr"]["original"]:
-                    flight_number -= 1
-                    continue
-                if image_links := flight["links"]["flickr"]["original"]:
+        for launch_id in launch_ids:
+            if launch_id:
+                image_links: list = fetch_images_by_launch_id(launch_id=launch_id)
+                if image_links:
                     break
-
+                
         for idx, image_link in enumerate(image_links):
             image_format = get_image_format(url=image_link)
             image_name: str = f"spacex_{idx}{image_format}"
             image_path = Path(path_images, image_name)
             download_image(url=image_link, path=image_path)
 
-
     except requests.exceptions.HTTPError as http_error:
         print("Данные не найдены")
-    except ValueNotFoundException as not_found_error:
-        print(f"Изображения с номером полета {flight_number} не найдены")
